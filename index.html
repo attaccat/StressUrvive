@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High School Simulator</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Include the Lora font -->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+ 
+</head>
+<body>
+    <div class="container">
+        <!-- Modal for game rules -->
+        <div id="rulesModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Game Rules</h2>
+                <p>Your goal is to manage stress and make decisions that balance your academics, social life, and extracurricular activities.</p>
+                <p>Beware of stress exceeding 100, as it ends the game. Plan carefully!</p>
+            </div>
+        </div>
+        
+        <!-- Rules Button -->
+        <button id="rulesButton" class="rules-icon">?</button>
+
+        <!-- Main Title -->
+        <h1>High School Simulator</h1>
+        
+        <!-- Main Layout -->
+        <div id="main-container">
+            <!-- Sidebar Section -->
+            <div id="sidebar">
+                <h2>Current Game State</h2>
+                <div id="game-state">
+                    <p id="status-placeholder">Loading status...</p>
+                </div>
+            </div>
+
+            <!-- Main Content Section -->
+            <div id="main-content">
+                <!-- Event Choices Section -->
+                <div id="event-choices">
+                    <h2>Choose Your Event</h2>
+                    <div id="choice-buttons">
+                        <!-- Event choice buttons will be generated here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Game Log Section -->
+                <div id="log">
+                    <h2>Game Log</h2>
+                    <div id="log-content">
+                        <!-- Game log entries will be added here by JavaScript -->
+                        <p>Event log will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript Files -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
