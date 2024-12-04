@@ -41,12 +41,50 @@ export const activeEvents = [
         description: "Participate in several clubs.",
         consequence: function(gameState) {
             gameState.social += 10;
-            gameState.isInClub = true;
             checkStressLimit();
-            return "You joined clubs! ";
+            return "Choose a club to join: ";
         },
         choiceTime: 2
     },
+        {
+            name: "Service Club",
+            description: "Clubs commited to making the world better by volunteering in the community.",
+            consequence: function(gameState) {
+                gameState.extracurriculars += 10;
+                gameState.isInClub = true;
+                checkStressLimit();
+                return "You joined a Service Club!";
+            },
+        },
+        {
+            name: "General Club",
+            description: "Clubs with members interested in various activities.",
+            consequence: function(gameState) {
+                gameState.extracurriculars += 5;
+                gameState.isInClub = true;
+                checkStressLimit();
+                return "You joined a General Club!";
+            },
+        },
+        {
+            name: "Academic Club",
+            description: "Clubs focused on academic excellence.",
+            consequence: function(gameState) {
+                gameState.brainPower += 10;
+                gameState.isInClub = true;
+                checkStressLimit();
+                return "You joined an Academic Club!";}
+        },
+        {
+            name: "Competitional Club",
+            description: "Clubs focused on particpating professional competitions.",
+            consequence: function(gameState) {
+                gameState.extracurriculars += 8;
+                gameState.isInClub = true;
+                checkStressLimit();
+                return "You joined a Competitional Club!";
+            },
+        },
     {
         name: "Join no clubs",
         description: "You decide not to join any club for now.",
@@ -107,7 +145,6 @@ export const activeEvents = [
         },
         choiceTime: 3,
         semesterOnly: 1,
-        gradeLevelOnly: [9, 10, 11]
     },
     {
         name: "Attend Extra Tutoring",
@@ -116,7 +153,7 @@ export const activeEvents = [
             gameState.brainPower += 10;
             gameState.stress += 2;
             checkStressLimit();
-            return "You learned a lot, but it was exhausting!";
+            return "You learned a lot from the tutoring, but it was exhausting!";
         },
         choiceTime: 3,
     },
@@ -127,7 +164,7 @@ export const activeEvents = [
             gameState.stress -= 5;
             gameState.gpa -= 0.1;
             checkStressLimit();
-            return "You feel relaxed, but your teacher wasn't happy!";
+            return "You feel relaxed, but your teacher wasn't that happy!";
         },
         choiceTime: 3,
     },
@@ -138,12 +175,12 @@ export const activeEvents = [
             gameState.social += 8;
             checkStressLimit();
             if(gameState.stress < 70){
-                gameState.stress += 4;
+                gameState.stress += 8;
                 return "You got into the varsity team! Start preparing for IASIS. "
             }
             return "You tried but didn't get in. Try again next year! ";
         },
-        choiceTime: 3,
+        choiceTime: [2,3],
     },
     {
         name: "All Night Revision",
@@ -268,27 +305,41 @@ export const activeEvents = [
 
 // triggerPassiveEvent() 
 export function triggerPassiveEvent(gameState) {
-    if (Math.random() < 0.9) { // 90% chance of passive event
-        let randomIndex = Math.floor(Math.random() * passiveEvents.length);
-        let event = passiveEvents[randomIndex];
-        
-        if (event) {
-            const consequenceMessage = event.consequence(gameState);
-            return { 
-                event, 
-                consequenceMessage: `${event.description} - ${consequenceMessage}` 
-            };  // Include name and description in message
-        } else {
-            console.warn("Undefined event selected at index:", randomIndex);
-            return null;
+    let availableEvents = passiveEvents.filter(event => {
+        // Check if the event is a limited event and has already been triggered
+        if (limitedEvents.includes(event.name) && gameState.triggeredPassiveEvents.includes(event.name)) {
+            return false;
         }
+        return true;
+    });
+
+    if (availableEvents.length === 0) {
+        console.warn("No more passive events available.");
+        return null;
     }
-    console.log("No passive event triggered this time.");
-    return null;
+
+    let randomIndex = Math.floor(Math.random() * availableEvents.length);
+    let event = availableEvents[randomIndex];
+
+    if (event) {
+        const consequenceMessage = event.consequence(gameState);
+        // Mark event as triggered if it's a limited event
+        if (limitedEvents.includes(event.name)) {
+            gameState.triggeredPassiveEvents.push(event.name);
+        }
+        return { 
+            event, 
+            consequenceMessage: `${event.description} - ${consequenceMessage}` 
+        };
+    } else {
+        console.warn("Undefined event selected at index:", randomIndex);
+        return null;
+    }
 }
 
-
 // Passive events
+const limitedEvents = ["Bankruptcy", "Rumors", "Hidden Genius", "Exam Cancelled", "Friendship Crisis"];
+
 export const passiveEvents = [
     {
         name: "Provoked",
@@ -308,7 +359,7 @@ export const passiveEvents = [
     },
     {
         name: "Dumped",
-        description: "You broke up",
+        description: "You were dumped.",
         consequence: function(gameState) {
             gameState.social -= 1;
             gameState.brainPower += 2;
@@ -339,7 +390,7 @@ export const passiveEvents = [
         name: "Bullying",
         description: "Someone is trying to bully you. ",
         consequence: function(gameState) {
-            if(gameState.social < 20){
+            if(gameState.social < 25){
                 gameState.stress += 7;
                 gameState.brainPower -= 2;
                 checkStressLimit();

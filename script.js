@@ -48,8 +48,13 @@ function displayEventChoices() {
 
     const choiceOptions = getChoiceTimeOptions(gameState.choiceTime);
 
+    // Filter out club type events from regular choices
+    const filteredOptions = choiceOptions.filter(event => 
+        !["Service Club", "General Club", "Competitional Club", "Academic Club"].includes(event.name)
+    );
+
     // Create buttons for active events
-    choiceOptions.forEach(event => {
+    filteredOptions.forEach(event => {
         if (!event || !event.name) return;
         const button = document.createElement("button");
         button.textContent = `${event.name}: ${event.description}`;
@@ -105,6 +110,27 @@ function filterEvents(eventsList, choiceTime) {
     });
 }
 
+export function displayClubChoices() {
+    const choiceButtonsDiv = document.getElementById("choice-buttons");
+    choiceButtonsDiv.innerHTML = ""; // Clear previous choices
+
+    const clubEvents = activeEvents.filter(event => 
+        ["Service Club", "General Club", "Competitional Club", "Academic Club"].includes(event.name)
+    );
+
+    clubEvents.forEach(club => {
+        const button = document.createElement("button");
+        button.textContent = `${club.name}: ${club.description}`;
+        button.classList.add("club"); // Apply the CSS class
+        button.addEventListener("click", () => {
+            const result = club.consequence(gameState);
+            logEvent(result);
+            proceedToNextChoice(); // Ensure this function updates the UI and game state
+        });
+        choiceButtonsDiv.appendChild(button);
+    });
+}
+
 // Check event requirements
 function checkEventRequirements(event) {
     const grade = gameState.gradeLevel;
@@ -125,7 +151,12 @@ function checkEventRequirements(event) {
 // Handle event choice and progress
 function handleEventChoice(event) {
     if (gameState.gameOver) return;
-    
+
+    if (event.name === "Join clubs") {
+        displayClubChoices();
+        return;
+    }
+
     const result = event.consequence(gameState);
     if (result) logEvent(result);
 
@@ -187,26 +218,19 @@ function proceedToNextChoice() {
     checkStressLimit();
 
     if (gameState.choiceTime < 4) {
-        // Increment choiceTime within the same semester
         gameState.choiceTime++;
     } else {
-        // End of choices for the semester; calculate GPA and apply rest period
         calculateGPA();
-        applyRestPeriod();  // This should happen only at the end of a semester
-
-        // Reset choiceTime and handle semester advancement
+        applyRestPeriod();
         gameState.choiceTime = 1;
 
         if (gameState.semester === 1) {
-            // Move to the second semester within the same grade
             gameState.semester = 2;
         } else {
-            // End of the school year; reset to first semester and increase grade level
             gameState.semester = 1;
             gameState.previousStress = gameState.stress;
             gameState.gradeLevel++;
 
-            // Check if the player has completed all grades
             if (gameState.gradeLevel > 12) {
                 endGame();
                 return;
@@ -214,11 +238,9 @@ function proceedToNextChoice() {
         }
     }
 
-    // Update choices and sidebar for the new round or semester
-    displayEventChoices();
-    updateSidebar();
+    displayEventChoices(); // Update choices for the new round or semester
+    updateSidebar(); // Update the sidebar with the latest game state
 }
-
 // End the game
 function endGame() {
     const choiceButtonsDiv = document.getElementById("choice-buttons");
@@ -328,6 +350,7 @@ function updateSidebar() {
         <h3>Current Game State</h3>
         <p class="grade-level"><strong>Grade Level:</strong> ${gameState.gradeLevel}</p>
         <p class="semester"><strong>Semester:</strong> ${gameState.semester}</p>
+        <p class="stress"><strong>Stress:</strong> ${gameState.stress}</p>
         <p><strong>Brain Power:</strong> ${gameState.brainPower}</p>
         <p><strong>GPA:</strong> ${gameState.gpa.toFixed(2)}</p>
         <p><strong>Social:</strong> ${gameState.social}</p>
