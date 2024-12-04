@@ -8,9 +8,22 @@
 /* Background and Fonts */
 body {
     font-family: 'Lora', sans-serif;
-    background: url('background.webp') no-repeat center center fixed;
-    background-size: cover; /* Ensures the image covers the whole screen */
     color: #333;
+    position: relative;
+    overflow: hidden; /* Ensure the pseudo-element covers the entire body */
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('background.webp') no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.7; /* Adjust opacity to make the image lighter */
+    z-index: -1; /* Ensure the image is behind the content */
 }
 
 .container {
@@ -61,30 +74,6 @@ body {
     text-align: center;
 }
 
-/* Stress Level Styling */
-.stress-level {
-    font-size: 1.4em;
-    font-weight: bold;
-    margin: 10px 0;
-    text-align: center;
-}
-
-.stress-level.low {
-    color: #a3d4c0; /* Cool pastel green */
-}
-
-.stress-level.moderate {
-    color: #d6e3ac; /* Soft, muted yellow-green */
-}
-
-.stress-level.high {
-    color: #d8a89e; /* Muted rose */
-}
-
-.stress-level.severe {
-    color: #b37c84; /* Cool mauve */
-}
-
 /* Sidebar Content Styling */
 #sidebar p {
     margin: 8px 0;
@@ -124,7 +113,7 @@ body {
     padding: 12px;
     font-size: 1.1em;
     font-weight: bold;
-    color: #fff;
+    color: #505050;
     border: none;
     border-radius: 12px;
     cursor: pointer;
@@ -132,30 +121,100 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-#choice-buttons button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
 /* Button Colors for Event Types */
 .hardwork {
-    background-color: #8dbfbd; /* Cool muted teal */
+    background-color: #f8e2e1; 
 }
 
 .revision {
-    background-color: #a1c1d1; /* Soft blue-gray */
+    background-color: #b2ceef; 
 }
 
 .student-gov {
-    background-color: #b3c6cc; /* Light slate */
+    background-color: #eed6af; 
 }
 
 .club {
-    background-color: #a8d1d4; /* Soft aqua */
+    background-color: #bdd7a0;
 }
 
 .filler {
-    background-color: #c7d1d9; /* Light gray-blue */
+    background-color: #e6ffff; 
+}
+
+/* Log Button Styling */
+.log-icon {
+    background-color: #699462; 
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    margin: 10px auto; /* Center the button */
+}
+
+.log-icon:hover {
+    background-color: #d6f8cc; 
+}
+
+/* Log Button Styling */
+#toggle-log-button {
+    background-color: #6d9ba1; 
+    color: white;
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    margin: 10px auto; /* Center the button */
+}
+
+#toggle-log-button:hover {
+    background-color: #5c8e91; /* Slightly darker on hover */
+}
+
+/* Rules Icon Styling */
+.rules-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #5c8e91; 
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+}
+
+.rules-icon:hover {
+    background-color: #328388; 
+}
+
+#latest-log {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+    text-align: center; /* Center the latest log text */
 }
 
 .passive-event-container {
@@ -197,6 +256,7 @@ body {
 #log-content::-webkit-scrollbar-thumb:hover {
     background-color: #8ba2b1;
 }
+.hidden {display:none;}
 
 /* Header Styling */
 h2 {
@@ -245,29 +305,4 @@ h2 {
     font-weight: bold;
     cursor: pointer;
     color: #666;
-}
-
-/* Rules Icon Styling */
-.rules-icon {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #6d9ba1;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s;
-}
-
-.rules-icon:hover {
-    background-color: #5c8e91;
 }

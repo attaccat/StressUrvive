@@ -19,6 +19,7 @@ let gameState = {
     clubPresident: false,
     previousStress: 10,
     gameOver: false,
+    triggeredPassiveEvents: [],
 };
 
 // Start or reset the semester
@@ -47,13 +48,9 @@ function displayEventChoices() {
 
     const choiceOptions = getChoiceTimeOptions(gameState.choiceTime);
 
+    // Create buttons for active events
     choiceOptions.forEach(event => {
-        if (!event || !event.name) return;  // Add this line to skip undefined events
-        const button = document.createElement("button");
-        button.textContent = `${event.name}: ${event.description}`;
-    });
-    
-    choiceOptions.forEach(event => {
+        if (!event || !event.name) return;
         const button = document.createElement("button");
         button.textContent = `${event.name}: ${event.description}`;
 
@@ -66,18 +63,35 @@ function displayEventChoices() {
             button.classList.add("club");
         } else if (event.name === "Student Government" || event.name === "Run for student government") {
             button.classList.add("student-gov");
-        } else if (["Date someone", "Break up", "Fight someone"].includes(event.name)) {
+        } else {
             button.classList.add("filler");
         }
 
-        button.addEventListener("click", () => handleEventChoice(event));
+        button.addEventListener("click", () => {
+            handleEventChoice(event);
+            showPassiveEventButton();
+        });
         choiceButtonsDiv.appendChild(button);
     });
 }
 
+function showPassiveEventButton() {
+    const choiceButtonsDiv = document.getElementById("choice-buttons");
+
+    // Check if the passive event button already exists
+    if (!document.getElementById("passive-event-button")) {
+        const passiveEventButton = document.createElement("button");
+        passiveEventButton.id = "passive-event-button";
+        passiveEventButton.textContent = "Trigger Passive Event";
+        passiveEventButton.addEventListener("click", handlePassiveEvent);
+        choiceButtonsDiv.appendChild(passiveEventButton);
+    }
+}
+
+
 // Determine available choices
 function getChoiceTimeOptions(choiceTime) {
-    return filterEvents(activeEvents, choiceTime).slice(0, 5);
+    return filterEvents(activeEvents, choiceTime).slice(0, 4);
     
 }
 
@@ -115,30 +129,32 @@ function handleEventChoice(event) {
     const result = event.consequence(gameState);
     if (result) logEvent(result);
 
-    // Apply defaults for unselected options in specific choice times
-    if (gameState.choiceTime === 1 && !["Very hard work", "Normal effort", "Slacking"].includes(event.name)) {
-        applyDefaultAction("Normal effort", 5, 5);
-    }
-    if (gameState.choiceTime === 5 && !["All Night Revision", "Normal Revision", "Give Up"].includes(event.name)) {
-        applyDefaultAction("Normal Revision", 5, 5);
-    }
+    applyDefaultActions(event.name, gameState.choiceTime);
 
-    handlePassiveEvent();
-    proceedToNextChoice();
+    const choiceButtonsDiv = document.getElementById("choice-buttons");
+    choiceButtonsDiv.innerHTML = "";  // Clear active choices
+    showPassiveEventButton();
+
+    updateSidebar();
 }
 
 // Apply a default action
-function applyDefaultAction(name, stressImpact, brainPowerImpact) {
-    gameState.stress += stressImpact;
-    gameState.brainPower += brainPowerImpact;
-    logEvent(`Default action applied: '${name}' - Stress +${stressImpact}, Brain Power +${brainPowerImpact}`);
+function applyDefaultActions(eventName, choiceTime) {
+    const defaultActions = {
+        1: { name: "Normal effort", stressImpact: 5, brainPowerImpact: 5 },
+        5: { name: "Normal Revision", stressImpact: 5, brainPowerImpact: 5 }
+    };
+
+    const defaultAction = defaultActions[choiceTime];
+    if (defaultAction && !["Very hard work", "Normal effort", "Slacking", "All Night Revision", "Normal Revision", "Give Up"].includes(eventName)) {
+        applyDefaultAction(defaultAction.name, defaultAction.stressImpact, defaultAction.brainPowerImpact);
+    }
 }
 
 // Trigger and log passive event
 function handlePassiveEvent() {
     const result = triggerPassiveEvent(gameState);
-    gameState.stress = clamp(gameState.stress, 0, 100);
-    gameState.social = clamp(gameState.social, 0, 100);
+    clampGameStateValues();
     checkStressLimit();
 
     if (!result) {
@@ -155,7 +171,7 @@ function handlePassiveEvent() {
     const passiveEventContainer = document.createElement("div");
     passiveEventContainer.classList.add("passive-event-container");
 
-    passiveEventContainer.innerHTML = `<strong>${event.name}</strong><br>${event.description}`;
+    passiveEventContainer.innerHTML = `<strong>${event.name}</strong><br>`;
     choiceButtonsDiv.appendChild(passiveEventContainer);
 
     logEvent(consequenceMessage);  // Log the passive event with description
@@ -167,11 +183,10 @@ function handlePassiveEvent() {
 
 // Proceed to next choice or semester
 function proceedToNextChoice() {
-    gameState.stress = clamp(gameState.stress, 0, 100);
-    gameState.social = clamp(gameState.social, 0, 100);
+    clampGameStateValues();
     checkStressLimit();
 
-    if (gameState.choiceTime < 5) {
+    if (gameState.choiceTime < 4) {
         // Increment choiceTime within the same semester
         gameState.choiceTime++;
     } else {
@@ -209,9 +224,9 @@ function endGame() {
     const choiceButtonsDiv = document.getElementById("choice-buttons");
     choiceButtonsDiv.innerHTML = ""; // Clear all choice buttons
     
-    if(gameState.gradeLevel=12){
+    if (gameState.gradeLevel === 12) {
         logEvent("Graduation!");
-    }
+    }    
 
     // Display a "Restart Game" button
     const restartButton = document.createElement("button");
@@ -287,36 +302,32 @@ function applyRestPeriod() {
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
+function clampGameStateValues() {
+    gameState.stress = clamp(gameState.stress, 0, 100);
+    gameState.social = clamp(gameState.social, 0, 100);
+}
+
 
 export function checkStressLimit() {
     if (gameState.stress >= 100 && !gameState.gameOver) {
         gameState.gameOver = true; // Prevent further interactions
         logEvent("Your stress level has exceeded the safe limit. Game over.");
         endGame();
+        return; 
     }
 }
+
 
 
 // Update the sidebar with current game state
 function updateSidebar() {
     const sidebar = document.getElementById("sidebar");
-    
-    // Determine stress level class based on value
-    let stressClass = "low";
-    if (gameState.stress >= 75) {
-        stressClass = "severe";
-    } else if (gameState.stress >= 50) {
-        stressClass = "high";
-    } else if (gameState.stress >= 25) {
-        stressClass = "moderate";
-    }
 
     // Set the sidebar content with the appropriate stress level
     sidebar.innerHTML = `
         <h3>Current Game State</h3>
         <p class="grade-level"><strong>Grade Level:</strong> ${gameState.gradeLevel}</p>
         <p class="semester"><strong>Semester:</strong> ${gameState.semester}</p>
-        <p class="stress-level ${stressClass}"><strong>Stress:</strong> ${gameState.stress}</p>
         <p><strong>Brain Power:</strong> ${gameState.brainPower}</p>
         <p><strong>GPA:</strong> ${gameState.gpa.toFixed(2)}</p>
         <p><strong>Social:</strong> ${gameState.social}</p>
@@ -336,10 +347,25 @@ function logEvent(message) {
     logEntry.textContent = message;
     logDiv.appendChild(logEntry);
 
+    // Update the latest log entry
+    const latestLogDiv = document.getElementById('latest-log');
+    latestLogDiv.innerHTML = `<p>${message}</p>`;
+
     if (logDiv.children.length > 10) {
         logDiv.removeChild(logDiv.firstChild);
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleLogButton = document.getElementById("toggle-log-button");
+    const logContent = document.getElementById("log-content");
+
+    toggleLogButton.addEventListener("click", () => {
+        logContent.classList.toggle("hidden");
+        toggleLogButton.textContent = logContent.classList.contains("hidden") ? "Show Full Log" : "Hide Full Log";
+    });
+});
+
 
 // Initialize the game on page load
 window.onload = startSemester;

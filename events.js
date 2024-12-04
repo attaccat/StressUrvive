@@ -118,7 +118,7 @@ export const activeEvents = [
             checkStressLimit();
             return "You learned a lot, but it was exhausting!";
         },
-        choiceTime: [3, 4]
+        choiceTime: 3,
     },
     {
         name: "Skip a Class",
@@ -129,7 +129,7 @@ export const activeEvents = [
             checkStressLimit();
             return "You feel relaxed, but your teacher wasn't happy!";
         },
-        choiceTime: [3, 4]
+        choiceTime: 3,
     },
     {
         name: "Tryout for varsity",
@@ -143,18 +143,7 @@ export const activeEvents = [
             }
             return "You tried but didn't get in. Try again next year! ";
         },
-        choiceTime: [3, 4]
-    },
-    {
-        name: "Engage during Interim",
-        description: "Spend time with friends while exploring a new destination.",
-        consequence: function(gameState) {
-            gameState.stress -= 10;
-            gameState.social += 15;
-            checkStressLimit();
-            return "You had a great time bonding with your peers!";
-        },
-        choiceTime: 3
+        choiceTime: 3,
     },
     {
         name: "All Night Revision",
@@ -165,7 +154,7 @@ export const activeEvents = [
             checkStressLimit();
             return "You worked very hard! ";
         },
-        choiceTime: 5
+        choiceTime: 4
     },
     {
         name: "Normal Revision",
@@ -176,7 +165,7 @@ export const activeEvents = [
             checkStressLimit();
             return "You put in normal effort! ";
         },
-        choiceTime: 5
+        choiceTime: 4
     },
     {
         name: "Give Up",
@@ -187,7 +176,7 @@ export const activeEvents = [
             checkStressLimit();
             return "You decided to take a chance on fate!";
         },
-        choiceTime: 5
+        choiceTime: 4
     },
     { 
         name: "Date someone",
@@ -198,7 +187,7 @@ export const activeEvents = [
             checkStressLimit();
             return "You are no longer single. ";
         },
-        choiceTime: [1, 2, 3, 4, 5],
+        choiceTime: [1, 2, 3, 4],
         forbidRelationship: true
     },
     {
@@ -230,7 +219,7 @@ export const activeEvents = [
                 checkStressLimit();
                 return "You broke up. You are kinda sad but also happy... ";}
         },
-        choiceTime: [1, 2, 3, 4, 5],
+        choiceTime: [1, 2, 3, 4],
         requiresRelationship: true
     },
     {
@@ -244,7 +233,7 @@ export const activeEvents = [
             }
         },
         gradeLevelOnly: 12,
-        choiceTime: [3, 4],
+        choiceTime: 3,
         semesterOnly: 1
     },
     {
@@ -272,12 +261,12 @@ export const activeEvents = [
             }
         },
         gradeLevelOnly: 12,
-        choiceTime: [4,5],
+        choiceTime: 4,
         semesterOnly: 2
     }
 ];
 
-// triggerPassiveEvent() - Modified to include detailed logging
+// triggerPassiveEvent() 
 export function triggerPassiveEvent(gameState) {
     if (Math.random() < 0.9) { // 90% chance of passive event
         let randomIndex = Math.floor(Math.random() * passiveEvents.length);
@@ -348,7 +337,7 @@ export const passiveEvents = [
     },
     {
         name: "Bullying",
-        description: "You were bullied! ",
+        description: "Someone is trying to bully you. ",
         consequence: function(gameState) {
             if(gameState.social < 20){
                 gameState.stress += 7;
@@ -356,7 +345,6 @@ export const passiveEvents = [
                 checkStressLimit();
                 return "You feel pain and cannot focus during class. "
             }
-            checkStressLimit();
             return "You were almost bullied but your friends rescued you. "
         }
     },
