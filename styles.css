@@ -228,12 +228,31 @@ body::before {
 }
 
 /* Rules Icon Styling */
-.rules-icon {
+.rules-icon{
     position: fixed;
     bottom: 20px;
     right: 20px;
     background-color: #5c8e91; 
-    color: #333;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+}
+.music-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 80px;
+    background-color: #5c8e91; 
+    color: #ffffff;
     font-size: 20px;
     font-weight: bold;
     border: none;
@@ -248,7 +267,7 @@ body::before {
     transition: background-color 0.2s;
 }
 
-.rules-icon:hover {
+.rules-icon, .music-icon:hover {
     background-color: #328388; 
 }
 
@@ -347,4 +366,24 @@ h2 {
     font-weight: bold;
     cursor: pointer;
     color: #666;
+}
+
+.citation {
+
+    bottom: 5px;
+    left: 10px;
+    max-width: 400px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff7ea;
+    background-color: transparent;
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    pointer-events: none; /* Ensure clicks pass through */
+    word-wrap: break-word;
+}
+
+#music-citation {
+    bottom: 30px; /* Adjust to stack above the background citation */
 }

@@ -6,6 +6,7 @@
     <title>StressurVive Simulator</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <!-- Home Page Section -->
@@ -31,8 +32,17 @@
             <!-- Rules Button -->
             <button id="rulesButton" class="rules-icon">?</button>
 
+            <!-- Background Music + Button-->
+            <audio id="background-music" loop>
+                <source src="Janette YT TickTack Instrumental.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <button id="music-toggle-button" class="music-icon">
+                <i id="music-icon" class="fas fa-music"></i>
+            </button>
+            
             <!-- Main Title -->
-            <h1>High School Simulator</h1>
+            <h1>StressurVive Simulator</h1>
             
             <!-- Main Layout -->
             <div id="main-container">
@@ -79,5 +89,8 @@
         });
     </script>
     <script type="module" src="script.js"></script>
+    <p id="background-citation" class="citation">Background: Kairosoft Co., Ltd, 2017, Dream Town Story Promotion</p>
+    <p id="music-citation" class="citation">Music: BELIFT LAB Inc. (2024, Nov 14). ILLIT - Tick Tack (Official MV). "Tick Tack Instrumental" by Janette. YouTube. </p>
+
 </body>
 </html>

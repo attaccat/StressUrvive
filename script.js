@@ -378,6 +378,24 @@ function logEvent(message) {
         logDiv.removeChild(logDiv.firstChild);
     }
 }
+/* all major functions 
+displayEventChoices()
+handleEventChoice(event)
+proceedToNextChoice()
+endGame()
+updateSidebar()
+logEvent(message)
+applyRestPeriod()
+calculateGPA()
+checkStressLimit()
+clampGameStateValues()
+applyDefaultActions(eventName, choiceTime)
+handlePassiveEvent()
+showPassiveEventButton()
+getChoiceTimeOptions(choiceTime)
+filterEvents(eventsList, choiceTime)
+displayClubChoices()
+*/
 
 document.addEventListener("DOMContentLoaded", () => {
     const toggleLogButton = document.getElementById("toggle-log-button");
@@ -389,6 +407,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    const music = document.getElementById("background-music");
+    const musicToggleButton = document.getElementById("music-toggle-button");
+    const musicIcon = document.getElementById("music-icon");
+
+    let isMusicPlaying = false;
+
+    musicToggleButton.addEventListener("click", function() {
+        if (isMusicPlaying) {
+            music.play();
+            musicIcon.classList.remove("fa-volume-mute");
+            musicIcon.classList.add("fa-music");
+        } else {
+            music.pause();
+            musicIcon.classList.remove("fa-music");
+            musicIcon.classList.add("fa-volume-mute");
+        }
+        isMusicPlaying = !isMusicPlaying;
+    });
+});
 
 // Initialize the game on page load
 window.onload = startSemester;
