@@ -3,69 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>High School Simulator</title>
-    <!-- Link to the CSS file -->
+    <title>StressurVive Simulator</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Include the Lora font -->
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
- 
 </head>
 <body>
-    <div class="container">
-        <!-- Modal for game rules -->
-        <div id="rulesModal" class="modal hidden">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <h2>Game Rules</h2>
-                <p>Your goal is to manage stress and make decisions that balance your academics, social life, and extracurricular activities.</p>
-                <p>Beware of stress exceeding 100, as it ends the game. Plan carefully!</p>
-            </div>
-        </div>
-        
-        <!-- Rules Button -->
-        <button id="rulesButton" class="rules-icon">?</button>
+    <!-- Home Page Section -->
+    <div id="home-page" class="welcome-container">
+        <h1>StressurVive Simulator</h1>
+        <img src="images/stressurvives.png" alt="StressurVive Logo" class="logo-image">
+        <button id="start-game-button" class="start-button">Start Game</button>
+    </div>
 
-        <!-- Main Title -->
-        <h1>High School Simulator</h1>
-        
-        <!-- Main Layout -->
-        <div id="main-container">
-            <!-- Sidebar Section -->
-            <div id="sidebar">
-                <h2>Current Game State</h2>
-                <div id="game-state">
-                    <p id="status-placeholder">Loading status...</p>
-                    <p class="stress-level">Stress: </p>
+    <!-- Main Game Section -->
+    <div id="main-game" class="hidden">
+        <div class="container">
+            <!-- Modal for game rules -->
+            <div id="rulesModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Game Rules</h2>
+                    <p>Your goal is to manage stress and make decisions that balance your academics, social life, and extracurricular activities.</p>
+                    <p>Beware of stress exceeding 100, as it ends the game. Plan carefully!</p>
                 </div>
             </div>
+            
+            <!-- Rules Button -->
+            <button id="rulesButton" class="rules-icon">?</button>
 
-            <!-- Main Content Section -->
-            <div id="main-content">
-                <!-- Event Choices Section -->
-                <div id="event-choices">
-                    <h2>Choose Your Event</h2>
-                    <div id="choice-buttons">
-                        <!-- Event choice buttons will be generated here by JavaScript -->
+            <!-- Main Title -->
+            <h1>High School Simulator</h1>
+            
+            <!-- Main Layout -->
+            <div id="main-container">
+                <!-- Sidebar Section -->
+                <div id="sidebar">
+                    <h2>Current Game State</h2>
+                    <div id="game-state">
+                        <p id="status-placeholder">Loading status...</p>
+                        <p class="stress-level">Stress: </p>
                     </div>
                 </div>
 
-                <!-- Game Log Section -->
-                <div id="log">
-                    <h2>Game Log</h2>
-                    <div id="latest-log">
-                        <!-- Latest log entry will be displayed here -->
+                <!-- Main Content Section -->
+                <div id="main-content">
+                    <!-- Event Choices Section -->
+                    <div id="event-choices">
+                        <h2>Choose Your Event</h2>
+                        <div id="choice-buttons">
+                            <!-- Event choice buttons will be generated here by JavaScript -->
+                        </div>
                     </div>
-                    <button id="toggle-log-button">Show Full Log</button>
-                    <div id="log-content" class="hidden">
-                        <!-- Game log entries will be added here by JavaScript -->
-                        <p>Event log will appear here</p>
+
+                    <!-- Game Log Section -->
+                    <div id="log">
+                        <h2>Game Log</h2>
+                        <div id="latest-log">
+                            <!-- Latest log entry will be displayed here -->
+                        </div>
+                        <button id="toggle-log-button">Show Full Log</button>
+                        <div id="log-content" class="hidden">
+                            <!-- Game log entries will be added here by JavaScript -->
+                            <p>Event log will appear here</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main JavaScript Files -->
+    <script>
+        document.getElementById("start-game-button").addEventListener("click", function() {
+            document.getElementById("home-page").classList.add("hidden");
+            document.getElementById("main-game").classList.remove("hidden");
+        });
+    </script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
