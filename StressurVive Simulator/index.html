@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StressurVive Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Home Page Section -->
+    <div id="home-page" class="welcome-container">
+        <img src="logo.png" alt="StressurVive Logo" class="logo-image">
+        <button id="start-game-button" class="start-button">Start Game</button>
+    </div>
+
+    <!-- Main Game Section -->
+    <div id="main-game" class="hidden">
+        <div class="container">
+            <!-- Modal for game rules -->
+            <div id="rulesModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Game Rules</h2>
+                    <p>Your goal is to manage stress and make decisions that balance your academics, social life, and extracurricular activities.</p>
+                    <p>Beware of stress exceeding 100, as it ends the game. Plan carefully!</p>
+                </div>
+            </div>
+            
+            <!-- Rules Button -->
+            <button id="rulesButton" class="rules-icon">?</button>
+
+            <!-- Background Music + Button-->
+            <audio id="background-music" loop>
+                <source src="Janette YT TickTack Instrumental.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <button id="music-toggle-button" class="music-icon">
+                <i id="music-icon" class="fas fa-music"></i>
+            </button>
+            
+            <!-- Main Title -->
+            <h1>StressurVive Simulator</h1>
+            
+            <!-- Main Layout -->
+            <div id="main-container">
+                <!-- Sidebar Section -->
+                <div id="sidebar">
+                    <h2>Current Game State</h2>
+                    <div id="game-state">
+                        <p id="status-placeholder">Loading status...</p>
+                        <p class="stress-level">Stress: </p>
+                    </div>
+                </div>
+
+                <!-- Main Content Section -->
+                <div id="main-content">
+                    <!-- Event Choices Section -->
+                    <div id="event-choices">
+                        <h2>Choose Your Event</h2>
+                        <div id="choice-buttons">
+                            <!-- Event choice buttons will be generated here by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Game Log Section -->
+                    <div id="log">
+                        <h2>Game Log</h2>
+                        <div id="latest-log">
+                            <!-- Latest log entry will be displayed here -->
+                        </div>
+                        <button id="toggle-log-button">Show Full Log</button>
+                        <div id="log-content" class="hidden">
+                            <!-- Game log entries will be added here by JavaScript -->
+                            <p>Event log will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("start-game-button").addEventListener("click", function() {
+            document.getElementById("home-page").classList.add("hidden");
+            document.getElementById("main-game").classList.remove("hidden");
+        });
+
+    </script>
+    <script type="module" src="script.js"></script>
+    <p id="background-citation" class="citation">Background: Kairosoft Co., Ltd, 2017, Dream Town Story Promotion</p>
+    <p id="music-citation" class="citation">Music: BELIFT LAB Inc. (2024, Nov 14). ILLIT - Tick Tack (Official MV). "Tick Tack Instrumental" by Janette. YouTube. </p>
+
+</body>
+</html>
