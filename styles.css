@@ -22,10 +22,14 @@
     color: #555;
     margin-bottom: 30px;
 }
+.logo-image {
+    margin-bottom: 20px;
+}
 
 .start-button {
     background-color: #6d9ba1;
     color: white;
+    font-family: 'Lora', serif;
     font-size: 1.2em;
     padding: 15px 30px;
     border: none;

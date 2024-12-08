@@ -17,9 +17,10 @@ let gameState = {
     semester: 1,
     choiceTime: 1,
     clubPresident: false,
-    previousStress: 10,
+    previousStress: 0,
     gameOver: false,
     triggeredPassiveEvents: [],
+    arguedWithTeacher: false,
 };
 
 // Start or reset the semester
@@ -48,20 +49,23 @@ function displayEventChoices() {
 
     const choiceOptions = getChoiceTimeOptions(gameState.choiceTime);
 
-    // Filter out club type events from regular choices
+    // Log available events for debugging
+    console.log("Available events:", choiceOptions.map(event => event.name));
+
     const filteredOptions = choiceOptions.filter(event => 
         !["Service Club", "General Club", "Competitional Club", "Academic Club"].includes(event.name)
     );
 
-    // Create buttons for active events
     filteredOptions.forEach(event => {
         if (!event || !event.name) return;
         const button = document.createElement("button");
         button.textContent = `${event.name}: ${event.description}`;
 
-        // Add appropriate class based on event type
+        // Add class based on event type
         if (["Very hard work", "Normal effort", "Slacking"].includes(event.name)) {
             button.classList.add("hardwork");
+        } else if (event.name.includes("Application")) {
+            button.classList.add("application");
         } else if (["All Night Revision", "Normal Revision", "Give Up"].includes(event.name)) {
             button.classList.add("revision");
         } else if (event.name.includes("Club") || event.name.includes("clubs")) {
@@ -74,7 +78,6 @@ function displayEventChoices() {
 
         button.addEventListener("click", () => {
             handleEventChoice(event);
-            showPassiveEventButton();
         });
         choiceButtonsDiv.appendChild(button);
     });
@@ -96,9 +99,22 @@ function showPassiveEventButton() {
 
 // Determine available choices
 function getChoiceTimeOptions(choiceTime) {
-    return filterEvents(activeEvents, choiceTime).slice(0, 4);
-    
+    const filteredEvents = filterEvents(activeEvents, choiceTime);
+
+    // Prioritize application events
+    const prioritizedEvents = filteredEvents.sort((a, b) => {
+        if (a.name.includes("Application") && !b.name.includes("Application")) {
+            return -1; // a comes before b
+        }
+        if (!a.name.includes("Application") && b.name.includes("Application")) {
+            return 1; // b comes before a
+        }
+        return 0; // no change in order
+    });
+
+    return prioritizedEvents.slice(0, 4);
 }
+
 
 // Filter events based on conditions
 function filterEvents(eventsList, choiceTime) {
@@ -145,7 +161,15 @@ function checkEventRequirements(event) {
     if (event.semesterOnly && event.semesterOnly !== semester) return false;
     if (event.gradeLevelOnly && ![].concat(event.gradeLevelOnly).includes(grade)) return false;
 
+    console.log(event.name);
     return true;
+}
+
+function minValues(){
+    gameState.stress = Math.max(0, gameState.stress);
+    gameState.brainPower = Math.max(30, gameState.brainPower);
+    gameState.social = Math.max(10, gameState.social);
+    gameState.gpa = Math.max(0, gameState.gpa);
 }
 
 // Handle event choice and progress
@@ -157,14 +181,36 @@ function handleEventChoice(event) {
         return;
     }
 
+    if (event.name === "Start a New Club"){
+        displayClubChoices();
+        gameState.leadershipExperience++;
+        return;
+    }
+
+    // Apply the event's consequences
     const result = event.consequence(gameState);
     if (result) logEvent(result);
 
+    // Apply default actions if applicable
     applyDefaultActions(event.name, gameState.choiceTime);
+
+    minValues();
+
+    // Check stress limit after applying consequences
+    checkStressLimit();
+
+    // If the game is over, stop further processing
+    if (gameState.gameOver) return;
 
     const choiceButtonsDiv = document.getElementById("choice-buttons");
     choiceButtonsDiv.innerHTML = "";  // Clear active choices
-    showPassiveEventButton();
+
+    // Show passive event button only after event 1 and 3
+    if (gameState.choiceTime === 1 || gameState.choiceTime === 3) {
+        showPassiveEventButton();
+    } else {
+        proceedToNextChoice(); // Automatically proceed if not showing passive event
+    }
 
     updateSidebar();
 }
@@ -172,20 +218,26 @@ function handleEventChoice(event) {
 // Apply a default action
 function applyDefaultActions(eventName, choiceTime) {
     const defaultActions = {
-        1: { name: "Normal effort", stressImpact: 5, brainPowerImpact: 5 },
-        5: { name: "Normal Revision", stressImpact: 5, brainPowerImpact: 5 }
+        1: { name: "Normal effort", stressImpact: 7, brainPowerImpact: 3 },
+        2: { name: "Stay as Club President", stressImpact: 4, leadershipImpact: 1 },
+        4: { name: "Normal Revision", stressImpact: 6, brainPowerImpact: 3 }
     };
 
     const defaultAction = defaultActions[choiceTime];
-    if (defaultAction && !["Very hard work", "Normal effort", "Slacking", "All Night Revision", "Normal Revision", "Give Up"].includes(eventName)) {
-        applyDefaultAction(defaultAction.name, defaultAction.stressImpact, defaultAction.brainPowerImpact);
+
+    if (defaultAction && !["Very hard work", "Normal effort", "Slacking", "Stay as Club President", "All Night Revision", "Normal Revision", "Give Up"].includes(eventName)) {
+        // Apply the impacts directly to the game state
+        gameState.stress += defaultAction.stressImpact || 0;
+        gameState.brainPower += defaultAction.brainPowerImpact || 0;
+        if(gameState.clubPresident)
+            gameState.leadershipExperience += defaultAction.leadershipImpact || 0;
     }
 }
 
 // Trigger and log passive event
 function handlePassiveEvent() {
     const result = triggerPassiveEvent(gameState);
-    clampGameStateValues();
+    minValues();
     checkStressLimit();
 
     if (!result) {
@@ -214,53 +266,76 @@ function handlePassiveEvent() {
 
 // Proceed to next choice or semester
 function proceedToNextChoice() {
-    clampGameStateValues();
     checkStressLimit();
 
     if (gameState.choiceTime < 4) {
         gameState.choiceTime++;
+        displayEventChoices(); // Continue to the next choice
     } else {
         calculateGPA();
         applyRestPeriod();
         gameState.choiceTime = 1;
 
-        if (gameState.semester === 1) {
-            gameState.semester = 2;
-        } else {
-            gameState.semester = 1;
-            gameState.previousStress = gameState.stress;
-            gameState.gradeLevel++;
+        const choiceButtonsDiv = document.getElementById("choice-buttons");
+        choiceButtonsDiv.innerHTML = ""; // Clear all choice buttons
 
-            if (gameState.gradeLevel > 12) {
-                endGame();
-                return;
+        // Display each course grade and the GPA for this semester
+        const gradesDiv = document.createElement("div");
+        gradesDiv.innerHTML = `<p>Your course grades for this semester: ${gameState.courseGrades.join(', ')}</p>`;
+        gradesDiv.innerHTML += `<p>GPA: ${gameState.gpa.toFixed(2)}</p>`;
+        choiceButtonsDiv.appendChild(gradesDiv);
+
+        // Add a "Next Semester" button
+        const nextSemesterButton = document.createElement("button");
+        nextSemesterButton.textContent = "Next Semester";
+        nextSemesterButton.addEventListener("click", () => {
+            if (gameState.semester === 1) {
+                gameState.semester = 2;
+            } else {
+                gameState.semester = 1;
+                gameState.previousStress = gameState.stress;
+                gameState.gradeLevel++;
+
+                if (gameState.gradeLevel > 12) {
+                    endGame();
+                    return;
+                }
             }
-        }
+            displayEventChoices();
+            updateSidebar();
+        });
+        choiceButtonsDiv.appendChild(nextSemesterButton);
     }
 
-    displayEventChoices(); // Update choices for the new round or semester
     updateSidebar(); // Update the sidebar with the latest game state
 }
+
 // End the game
 function endGame() {
     const choiceButtonsDiv = document.getElementById("choice-buttons");
     choiceButtonsDiv.innerHTML = ""; // Clear all choice buttons
-    
-    if (gameState.gradeLevel === 12) {
-        logEvent("Graduation!");
-    }    
+
+    let endMessage = "";
+
+    if (gameState.gradeLevel > 12) {
+        endMessage = "Congratulations! You've completed high school!";
+    } else if (gameState.stress >= 100) {
+        endMessage = "Your stress level has exceeded the safe limit. Game over.";
+    }
+
+    logEvent(endMessage);
 
     // Display a "Restart Game" button
     const restartButton = document.createElement("button");
     restartButton.textContent = "Restart Game";
     restartButton.addEventListener("click", restartGame);
     choiceButtonsDiv.appendChild(restartButton);
-    
+
     // Optionally, disable further updates to the sidebar
     document.getElementById("sidebar").innerHTML = `
         <p><strong>Final Stress Level:</strong> ${gameState.stress}</p>
-        <p><strong>Game Over:</strong> Stress limit exceeded.</p>
-        <p>Click below to restart.</p>
+        <p><strong>Game Over:</strong> ${endMessage}</p>
+        <p>Click 'Restart Game' to try again.</p>
     `;
 }
 
@@ -280,55 +355,73 @@ function restartGame() {
         semester: 1,
         choiceTime: 1,
         clubPresident: false,
-        previousStress: 10,
+        previousStress: 0,
+        gameOver: false,
+        triggeredPassiveEvents: [],
+        arguedWithTeacher: false,
     };
     document.getElementById("log-content").innerHTML = "";
     startSemester();
 }
 
-// Simplified GPA calculation with better documentation
+// Simplified GPA calculation 
 function calculateGPA() {
-    const baseBrainPower = 35; // C+ baseline
     const stressThreshold = 65; // Determines course count
     const courses = (gameState.gradeLevel <= 10 || gameState.previousStress < stressThreshold) ? 7 : 6;
-    
-    const gradeAdjustment = Math.floor((gameState.brainPower - baseBrainPower) / 4);
+
+    // Adjust the minimum percentage based on brain power
+    const minPercentage = Math.min(100, 35 + Math.floor((gameState.brainPower-15) / 2));
+    const maxPercentage = 100;
+
+    const coursePercentages = Array.from({ length: courses }, () => Math.floor(Math.random() * (maxPercentage - minPercentage + 1) + minPercentage));
+
+    // Apply a 5% reduction to the third course
+    if (gameState.arguedWithTeacher) {
+        coursePercentages[2] = Math.max(0, coursePercentages[2] - 5);
+    }
+
+    // Map percentages to letter grades
     const gradeScale = [
-        { grade: "F", gpa: 0.0 },
-        { grade: "D", gpa: 1.0 },
-        { grade: "D+", gpa: 1.5 },
-        { grade: "C", gpa: 2.0 },
-        { grade: "C+", gpa: 2.5 },
-        { grade: "B", gpa: 3.2 },
-        { grade: "B+", gpa: 3.6 },
-        { grade: "A", gpa: 4.2 },
-        { grade: "A+", gpa: 4.6 },
+        { min: 0, max: 35, grade: "F", gpa: 0.0 },
+        { min: 35, max: 40, grade: "D", gpa: 1.0 },
+        { min: 40, max: 45, grade: "D+", gpa: 1.5 },
+        { min: 45, max: 50, grade: "C", gpa: 2.0 },
+        { min: 50, max: 60, grade: "C+", gpa: 2.5 },
+        { min: 60, max: 65, grade: "B", gpa: 3.0 },
+        { min: 65, max: 70, grade: "B+", gpa: 3.5 },
+        { min: 70, max: 85, grade: "A", gpa: 4.0 },
+        { min: 85, max: 101, grade: "A+", gpa: 4.5 },
     ];
 
-    let baselineIndex = 4; // Corresponds to C+
-    const gradePoints = Array.from({ length: courses }, () => {
-        const adjustedIndex = Math.max(0, Math.min(8, baselineIndex + gradeAdjustment + (Math.floor(Math.random() * 3) - 1)));
-        return gradeScale[adjustedIndex].gpa;
+    // Convert percentages to grades
+    gameState.courseGrades = coursePercentages.map(percent => {
+        const gradeInfo = gradeScale.find(scale => percent >= scale.min && percent <= scale.max);
+        return gradeInfo ? gradeInfo.grade : "C+";
     });
 
-    gameState.gpa = gradePoints.reduce((sum, gpa) => sum + gpa, 0) / courses;
+    const totalPercentage = coursePercentages.reduce((sum, percent) => sum + percent, 0);
+    const averagePercentage = totalPercentage / courses;
+    const averageGradeInfo = gradeScale.find(scale => averagePercentage >= scale.min && averagePercentage <= scale.max);
+    if (averageGradeInfo) {
+        gameState.gpa = averageGradeInfo.gpa;
+    } else {
+        console.error("Average percentage out of bounds:", averagePercentage);
+        gameState.gpa = 3.05;
+    }
+
+    // Add a small random variation to the GPA
+    const variation = (Math.random() * 0.09) + 0.01; // Random value between 0.01 and 0.1
+    gameState.gpa = Math.min(5, gameState.gpa + variation);
+
     logEvent(`Your GPA for Grade ${gameState.gradeLevel} Semester ${gameState.semester} is now ${gameState.gpa.toFixed(2)}.`);
+    logEvent(`Your course grades for this semester: ${gameState.courseGrades.join(', ')}`);
 }
 
 // Apply rest period to reduce stress and restore BP
 function applyRestPeriod() {
     gameState.stress = Math.max(0, gameState.stress - 5);
-    logEvent("Holiday between semesters! Stress -5.");
+    logEvent("Holiday between semesters! Stress -5."); 
 }
-
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-}
-function clampGameStateValues() {
-    gameState.stress = clamp(gameState.stress, 0, 100);
-    gameState.social = clamp(gameState.social, 0, 100);
-}
-
 
 export function checkStressLimit() {
     if (gameState.stress >= 100 && !gameState.gameOver) {
@@ -357,7 +450,6 @@ function updateSidebar() {
         <p><strong>In Club:</strong> ${gameState.isInClub ? 'Yes' : 'No'}</p>
         <p><strong>In Relationship:</strong> ${gameState.isInRelationship ? 'Yes' : 'No'}</p>
         <p><strong>Leadership Experience:</strong> ${gameState.leadershipExperience}</p>
-        <p><strong>Extracurriculars:</strong> ${gameState.extracurriculars}</p>
         <p><strong>Club President:</strong> ${gameState.clubPresident ? 'Yes' : 'No'}</p>
         <p><strong>Student Government:</strong> ${gameState.studentGov ? 'Yes' : 'No'}</p>
     `;
@@ -380,6 +472,7 @@ function logEvent(message) {
 }
 /* all major functions 
 displayEventChoices()
+minValues()
 handleEventChoice(event)
 proceedToNextChoice()
 endGame()
@@ -388,7 +481,6 @@ logEvent(message)
 applyRestPeriod()
 calculateGPA()
 checkStressLimit()
-clampGameStateValues()
 applyDefaultActions(eventName, choiceTime)
 handlePassiveEvent()
 showPassiveEventButton()

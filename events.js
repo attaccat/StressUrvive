@@ -7,7 +7,7 @@ export const activeEvents = [
         name: "Very hard work",
         description: "Work very hard this semester.",
         consequence: function(gameState) {
-            gameState.stress += 15;
+            gameState.stress += 14;
             gameState.brainPower += 5;
             checkStressLimit();
             return "You studied very hard! ";
@@ -18,7 +18,7 @@ export const activeEvents = [
         name: "Normal effort",
         description: "Put in normal effort this semester.",
         consequence: function(gameState) {
-            gameState.stress += 8;
+            gameState.stress += 7;
             gameState.brainPower += 3;
             checkStressLimit();
             return "You put in normal effort! ";
@@ -29,8 +29,8 @@ export const activeEvents = [
         name: "Slacking",
         description: "Slack off this semester.",
         consequence: function(gameState) {
-            gameState.stress += 4;
-            gameState.brainPower -= 10;
+            gameState.stress += 3;
+            gameState.brainPower -= 4;
             checkStressLimit();
             return "You slacked off!";
         },
@@ -52,6 +52,7 @@ export const activeEvents = [
             consequence: function(gameState) {
                 gameState.extracurriculars += 10;
                 gameState.isInClub = true;
+                gameState.social += 10;
                 checkStressLimit();
                 return "You joined a Service Club!";
             },
@@ -62,6 +63,7 @@ export const activeEvents = [
             consequence: function(gameState) {
                 gameState.extracurriculars += 5;
                 gameState.isInClub = true;
+                gameState.social += 5;
                 checkStressLimit();
                 return "You joined a General Club!";
             },
@@ -72,6 +74,7 @@ export const activeEvents = [
             consequence: function(gameState) {
                 gameState.brainPower += 10;
                 gameState.isInClub = true;
+                gameState.social += 5;
                 checkStressLimit();
                 return "You joined an Academic Club!";}
         },
@@ -79,8 +82,10 @@ export const activeEvents = [
             name: "Competitional Club",
             description: "Clubs focused on particpating professional competitions.",
             consequence: function(gameState) {
+                gameState.brainPower += 10;
                 gameState.extracurriculars += 8;
                 gameState.isInClub = true;
+                gameState.social += 5;
                 checkStressLimit();
                 return "You joined a Competitional Club!";
             },
@@ -99,7 +104,7 @@ export const activeEvents = [
         name: "Run for Club President",
         description: "Elect to become the president of the club.",
         consequence: function(gameState) {
-            gameState.stress += 6;
+            gameState.stress += 5;
             if(gameState.social >= 20){
                 gameState.clubPresident = true;
                 gameState.leadershipExperience += 1;
@@ -111,15 +116,16 @@ export const activeEvents = [
         },
         choiceTime: 2,
         semesterOnly: 2,
-        gradeLevelOnly: [9, 10, 11],
-        requiresClubMembership: true, // New property to signify it needs club membership
+        gradeLevelOnly: [10, 11],
+        requiresClubMembership: true, 
         requiresPresident: false
     },
     {
         name: "Stay as Club President",
         description: "Stay in the club and commit to your presidency. ",
         consequence: function(gameState) {
-            gameState.stress += 4;
+            gameState.stress += 2;
+            gameState.leadershipExperience += 1;
             checkStressLimit();
             return "You are still the club president!";
         },
@@ -145,6 +151,7 @@ export const activeEvents = [
         },
         choiceTime: 3,
         semesterOnly: 1,
+        gradeLevelOnly: [9, 10, 11],
     },
     {
         name: "Attend Extra Tutoring",
@@ -162,7 +169,6 @@ export const activeEvents = [
         description: "Take a break and skip a class.",
         consequence: function(gameState) {
             gameState.stress -= 5;
-            gameState.gpa -= 0.1;
             checkStressLimit();
             return "You feel relaxed, but your teacher wasn't that happy!";
         },
@@ -174,19 +180,19 @@ export const activeEvents = [
         consequence: function(gameState) {
             gameState.social += 8;
             checkStressLimit();
-            if(gameState.stress < 70){
+            if(gameState.stress <= 70){
                 gameState.stress += 8;
                 return "You got into the varsity team! Start preparing for IASIS. "
             }
             return "You tried but didn't get in. Try again next year! ";
         },
-        choiceTime: [2,3],
+        choiceTime: [2],
     },
     {
         name: "All Night Revision",
         description: "Pull all-nighters for the end-of-semester exams.",
         consequence: function(gameState) {
-            gameState.stress += 15;
+            gameState.stress += 12;
             gameState.brainPower += 5;
             checkStressLimit();
             return "You worked very hard! ";
@@ -197,7 +203,7 @@ export const activeEvents = [
         name: "Normal Revision",
         description: "Plan ahead and revise regularly.",
         consequence: function(gameState) {
-            gameState.stress += 10;
+            gameState.stress += 6;
             gameState.brainPower += 3;
             checkStressLimit();
             return "You put in normal effort! ";
@@ -208,8 +214,8 @@ export const activeEvents = [
         name: "Give Up",
         description: "Give up on revision for this semester's exams.",
         consequence: function(gameState) {
-            gameState.stress += 5;
-            gameState.brainPower -= 15;
+            gameState.stress += 4;
+            gameState.brainPower -= 5;
             checkStressLimit();
             return "You decided to take a chance on fate!";
         },
@@ -219,12 +225,13 @@ export const activeEvents = [
         name: "Date someone",
         description: "Start a romantic relationship",
         consequence: function(gameState) {
-            gameState.brainPower -= 10;
+            gameState.brainPower -= 1;
+            gameState.stress -= 1;
             gameState.isInRelationship = true;
             checkStressLimit();
             return "You are no longer single. ";
         },
-        choiceTime: [1, 2, 3, 4],
+        choiceTime: [2, 3, 4],
         forbidRelationship: true
     },
     {
@@ -237,13 +244,25 @@ export const activeEvents = [
                 return "You won the fight! ";
             }
             else{
-                gameState.social -= 2;
-                gameState.stress += 2;
+                gameState.social -= 1;
+                gameState.stress += 1;
                 checkStressLimit();
                 return "You lost the fight! ";
             }
         },
-        choiceTime: [1, 2, 3]
+        choiceTime: [1, 2, 3, 4]
+    },
+    {
+        name: "Start a New Club",
+        description: "Establish a new club.",
+        consequence: function(gameState) {
+            gameState.social += 10;
+            checkStressLimit();
+            return "You started a new club!"
+        },
+        semesterOnly: 2,
+        gradeLevelOnly: [9, 10, 11],
+        choiceTime: [3],
     },
     {
         name: "Break up",
@@ -263,8 +282,8 @@ export const activeEvents = [
         name: "Early Application",
         description: "Apply for early admission.",
         consequence: function(gameState) {
-            if (gameState.gpa > 4.15 && (gameState.brainPower > 95 || gameState.extracurriculars > 50) && gameState.leadershipExperience >= 2) {
-                return "You were accepted for early admission!";
+            if (gameState.gpa > 4.15 && (gameState.brainPower >= 95 || gameState.extracurriculars >= 40) && gameState.leadershipExperience >= 1.5) {
+                return "You were accepted for early admission! 🎉";
             } else {
                 return "You didn't receive any news back from early admission.";
             }
@@ -274,11 +293,11 @@ export const activeEvents = [
         semesterOnly: 1
     },
     {
-        name: "Normal Application",
-        description: "You applied to universities normally.",
+        name: "Regular Application",
+        description: "Apply to universities.",
         consequence: function(gameState) {
-            if (gameState.gpa > 3.5 && (gameState.brainPower > 75 || gameState.extracurriculars > 30) && gameState.leadershipExperience >= 0.5) {
-                return "You were accepted for normal admission!";
+            if (gameState.gpa > 3.5 && (gameState.brainPower >= 75 || gameState.extracurriculars >= 20) && gameState.leadershipExperience >= 0.5) {
+                return "You were accepted for normal admission! 😆";
             } else {
                 return "You didn't receive any news back from your applications.";
             }
@@ -289,10 +308,10 @@ export const activeEvents = [
     },
     {
         name: "Last Chance Application",
-        description: "You applied for last-chance admission.",
+        description: "Apply to universities again",
         consequence: function(gameState) {
-            if (gameState.gpa > 3.0 && (gameState.brainPower > 55 || gameState.extracurriculars > 20)) {
-                return "You were accepted for last-chance admission!";
+            if (gameState.gpa > 3.0 && (gameState.brainPower >= 55 || gameState.extracurriculars >= 10)) {
+                return "You were accepted for last-chance admission! ";
             } else {
                 return "You were rejected for last-chance admission...";
             }
@@ -308,6 +327,10 @@ export function triggerPassiveEvent(gameState) {
     let availableEvents = passiveEvents.filter(event => {
         // Check if the event is a limited event and has already been triggered
         if (limitedEvents.includes(event.name) && gameState.triggeredPassiveEvents.includes(event.name)) {
+            return false;
+        }
+        // Check if the event requires a relationship and if the player is in one
+        if (event.requiresRelationship && !gameState.isInRelationship) {
             return false;
         }
         return true;
@@ -338,20 +361,20 @@ export function triggerPassiveEvent(gameState) {
 }
 
 // Passive events
-const limitedEvents = ["Bankruptcy", "Rumors", "Hidden Genius", "Exam Cancelled", "Friendship Crisis"];
+const limitedEvents = ["Bullying", "Rumors", "Hidden Genius", "Exam Cancelled", "Friendship Crisis"];
 
 export const passiveEvents = [
     {
         name: "Provoked",
         description: "Someone provoked you for a fight.",
         consequence: function(gameState) {
-            gameState.stress += 3;
-            if (gameState.social > 20) {
+            gameState.stress += 2;
+            if (gameState.social >= 20) {
                 gameState.brainPower += 1;
                 checkStressLimit();
                 return "You handled the provocation well. ";
             } else {
-                gameState.social -= 2;
+                gameState.social -= 1;
                 checkStressLimit();
                 return "You had a fight and lost. ";
             }
@@ -362,26 +385,17 @@ export const passiveEvents = [
         description: "You were dumped.",
         consequence: function(gameState) {
             gameState.social -= 1;
-            gameState.brainPower += 2;
+            gameState.brainPower += 1;
             checkStressLimit();
-            return "You were dumped. You felt sad, but you were able to overcome it. ";
+            return "You felt sad, but you were able to overcome it. ";
         },
         requiresRelationship: true
-    },
-    {
-        name: "Bankruptcy",
-        description: "Your family is bankrupt... But you can still finish high school. ",
-        consequence: function(gameState) {
-            gameState.stress += 10;
-            checkStressLimit();
-            return "You decided to work harder";
-        }
     },
     {
         name: "Friendship Crisis",
         description: "You lost a close friend. ",
         consequence: function(gameState) {
-            gameState.social -= 3;
+            gameState.social -= 1;
             checkStressLimit();
             return "Your best friend left you. You didn't know what you've done wrong. "
         }
@@ -390,8 +404,8 @@ export const passiveEvents = [
         name: "Bullying",
         description: "Someone is trying to bully you. ",
         consequence: function(gameState) {
-            if(gameState.social < 25){
-                gameState.stress += 7;
+            if(gameState.social < 20){
+                gameState.stress += 5;
                 gameState.brainPower -= 2;
                 checkStressLimit();
                 return "You feel pain and cannot focus during class. "
@@ -437,7 +451,7 @@ export const passiveEvents = [
         consequence: function(gameState) {
             gameState.stress -= 10;
             if(gameState.brainPower >= 88){
-                gameState.brainPower += 4;
+                gameState.brainPower += 3;
             }
             else{
                 gameState.brainPower += 6;
@@ -448,10 +462,10 @@ export const passiveEvents = [
     },
     {
         name: "Argue with Teacher",
-        description: "You found a teacher annoying and you had an argue",
+        description: "You found a teacher annoying.",
         consequence: function(gameState) {
             gameState.stress -= 15;
-            gameState.gpa -= 1.0;
+            gameState.arguedWithTeacher = true;
             checkStressLimit();
             return "It felt great, but your gpa might not feel so great. "
         }
@@ -460,8 +474,8 @@ export const passiveEvents = [
         name: "Unexpected Quiz",
         description: "A surprise quiz caught you off guard.",
         consequence: function(gameState) {
-            gameState.stress += 3;
-            gameState.brainPower += 2;
+            gameState.stress += 2;
+            gameState.brainPower += 1;
             checkStressLimit();
             return "You managed to scrape through the quiz.";
         }
@@ -470,7 +484,7 @@ export const passiveEvents = [
         name: "Motivational Speech",
         description: "A guest speaker inspired you to work harder.",
         consequence: function(gameState) {
-            gameState.stress -= 3;
+            gameState.stress -= 5;
             checkStressLimit();
             return "You feel rejuvenated and ready to tackle new challenges.";
         }
