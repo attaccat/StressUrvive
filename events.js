@@ -18,7 +18,7 @@ export const activeEvents = [
         name: "Normal effort",
         description: "Put in normal effort this semester.",
         consequence: function(gameState) {
-            gameState.stress += 7;
+            gameState.stress += 9;
             gameState.brainPower += 3;
             checkStressLimit();
             return "You put in normal effort! ";
@@ -124,7 +124,7 @@ export const activeEvents = [
         name: "Stay as Club President",
         description: "Stay in the club and commit to your presidency. ",
         consequence: function(gameState) {
-            gameState.stress += 2;
+            gameState.stress += 3;
             gameState.leadershipExperience += 1;
             checkStressLimit();
             return "You are still the club president!";
@@ -139,9 +139,9 @@ export const activeEvents = [
         name: "Student Government",
         description: "Run for student government.",
         consequence: function(gameState) {
-            gameState.stress += 10;
             if(gameState.social >= 35){
                 gameState.leadershipExperience += 1;
+                gameState.stress += 10;
                 gameState.social +=20;
                 checkStressLimit();
                 return "You joined student government!";
@@ -158,7 +158,7 @@ export const activeEvents = [
         description: "Get some extra help with your subjects.",
         consequence: function(gameState) {
             gameState.brainPower += 10;
-            gameState.stress += 2;
+            gameState.stress += 4;
             checkStressLimit();
             return "You learned a lot from the tutoring, but it was exhausting!";
         },
@@ -168,21 +168,21 @@ export const activeEvents = [
         name: "Skip a Class",
         description: "Take a break and skip a class.",
         consequence: function(gameState) {
-            gameState.stress -= 5;
+            gameState.stress -= 3;
             checkStressLimit();
             return "You feel relaxed, but your teacher wasn't that happy!";
         },
         choiceTime: 3,
     },
     {
-        name: "Tryout for varsity",
+        name: "Tryout for varsity / junior varsity",
         description: "Sign up for a sport and start training.",
         consequence: function(gameState) {
             gameState.social += 8;
             checkStressLimit();
             if(gameState.stress <= 70){
                 gameState.stress += 8;
-                return "You got into the varsity team! Start preparing for IASIS. "
+                return "You got into the team! Start preparing for exchange and IASIS. "
             }
             return "You tried but didn't get in. Try again next year! ";
         },
@@ -203,7 +203,7 @@ export const activeEvents = [
         name: "Normal Revision",
         description: "Plan ahead and revise regularly.",
         consequence: function(gameState) {
-            gameState.stress += 6;
+            gameState.stress += 8;
             gameState.brainPower += 3;
             checkStressLimit();
             return "You put in normal effort! ";
@@ -239,7 +239,7 @@ export const activeEvents = [
         description: "Provoke a person and get into a fight",
         consequence: function(gameState) {
             if(gameState.social >= 20){
-                gameState.stress -= 5;
+                gameState.stress -= 2;
                 checkStressLimit();
                 return "You won the fight! ";
             }
@@ -296,7 +296,7 @@ export const activeEvents = [
         name: "Regular Application",
         description: "Apply to universities.",
         consequence: function(gameState) {
-            if (gameState.gpa > 3.5 && (gameState.brainPower >= 75 || gameState.extracurriculars >= 20) && gameState.leadershipExperience >= 0.5) {
+            if (gameState.gpa > 3.5 && gameState.brainPower >= 75 && (gameState.extracurriculars >= 20 || gameState.leadershipExperience >= 0.5)) {
                 return "You were accepted for normal admission! 😆";
             } else {
                 return "You didn't receive any news back from your applications.";
@@ -410,6 +410,7 @@ export const passiveEvents = [
                 checkStressLimit();
                 return "You feel pain and cannot focus during class. "
             }
+            gameState.stress += 2;
             return "You were almost bullied but your friends rescued you. "
         }
     },
@@ -427,7 +428,7 @@ export const passiveEvents = [
         name: "Exam Cancelled",
         description: "Your summative test was cancelled! Yay! ",
         consequence: function(gameState) {
-            gameState.stress -= 10;
+            gameState.stress -= 5;
             checkStressLimit();
             return "You felt relieved. ";
         }
@@ -436,7 +437,7 @@ export const passiveEvents = [
         name: "Rumors",
         description: "Someone spread a rumor about you",
         consequence: function(gameState) {
-            gameState.stress += 3;
+            gameState.stress += 5;
             gameState.social -=3;
             if (gameState.social < 20) {
                 gameState.social -= 3;
@@ -449,7 +450,7 @@ export const passiveEvents = [
         name: "Hidden Genius",
         description: "You unlocked your hidden brain",
         consequence: function(gameState) {
-            gameState.stress -= 10;
+            gameState.stress -= 8;
             if(gameState.brainPower >= 88){
                 gameState.brainPower += 3;
             }
@@ -464,7 +465,7 @@ export const passiveEvents = [
         name: "Argue with Teacher",
         description: "You found a teacher annoying.",
         consequence: function(gameState) {
-            gameState.stress -= 15;
+            gameState.stress -= 10;
             gameState.arguedWithTeacher = true;
             checkStressLimit();
             return "It felt great, but your gpa might not feel so great. "
@@ -484,7 +485,7 @@ export const passiveEvents = [
         name: "Motivational Speech",
         description: "A guest speaker inspired you to work harder.",
         consequence: function(gameState) {
-            gameState.stress -= 5;
+            gameState.stress -= 3;
             checkStressLimit();
             return "You feel rejuvenated and ready to tackle new challenges.";
         }

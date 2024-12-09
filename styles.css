@@ -212,7 +212,7 @@ body::before {
 }
 
 /* Log Button Styling */
-#toggle-log-button {
+#toggle-log-button, #toggle-ach-button {
     background-color: #6d9ba1; 
     color: white;
     font-family: 'Lora', serif;
@@ -227,8 +227,35 @@ body::before {
     margin: 10px auto; /* Center the button */
 }
 
-#toggle-log-button:hover {
+#toggle-log-button, #toggle-ach-button:hover {
     background-color: #5c8e91; /* Slightly darker on hover */
+}
+.ach-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+.progress-bar {
+    background-color: #ddd;
+    border-radius: 10px;
+    height: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar > div {
+    height: 100%;
+    border-radius: 10px;
+    background-color: #4caf50;
+    transition: width 0.3s ease;
 }
 
 /* Rules Icon Styling */

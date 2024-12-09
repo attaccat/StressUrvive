@@ -1,9 +1,7 @@
-
-
 import { activeEvents, triggerPassiveEvent, passiveEvents } from './events.js';
 
 // Initial game state
-let gameState = {
+export let gameState = {
     stress: 0,
     brainPower: 30,
     gpa: 3.0,
@@ -21,6 +19,7 @@ let gameState = {
     gameOver: false,
     triggeredPassiveEvents: [],
     arguedWithTeacher: false,
+    endingTitle: "",
 };
 
 // Start or reset the semester
@@ -360,9 +359,12 @@ function restartGame() {
         triggeredPassiveEvents: [],
         arguedWithTeacher: false,
     };
-    document.getElementById("log-content").innerHTML = "";
+    document.getElementById("log-content").innerHTML = ""; // Clear full log
+    document.getElementById("latest-log").innerHTML = ""; // Clear latest log
+    logEvent(`Welcome to Grade ${gameState.gradeLevel}, Semester ${gameState.semester}!`);
     startSemester();
 }
+
 
 // Simplified GPA calculation 
 function calculateGPA() {
@@ -370,7 +372,7 @@ function calculateGPA() {
     const courses = (gameState.gradeLevel <= 10 || gameState.previousStress < stressThreshold) ? 7 : 6;
 
     // Adjust the minimum percentage based on brain power
-    const minPercentage = Math.min(100, 35 + Math.floor((gameState.brainPower-15) / 2));
+    const minPercentage = Math.min(100, 27 + Math.floor((gameState.brainPower-15) / 2));
     const maxPercentage = 100;
 
     const coursePercentages = Array.from({ length: courses }, () => Math.floor(Math.random() * (maxPercentage - minPercentage + 1) + minPercentage));
@@ -432,8 +434,6 @@ export function checkStressLimit() {
     }
 }
 
-
-
 // Update the sidebar with current game state
 function updateSidebar() {
     const sidebar = document.getElementById("sidebar");
@@ -489,6 +489,10 @@ filterEvents(eventsList, choiceTime)
 displayClubChoices()
 */
 
+// Initialize the game on page load
+window.onload = startSemester;
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const toggleLogButton = document.getElementById("toggle-log-button");
     const logContent = document.getElementById("log-content");
@@ -497,33 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logContent.classList.toggle("hidden");
         toggleLogButton.textContent = logContent.classList.contains("hidden") ? "Show Full Log" : "Hide Full Log";
     });
-});
 
-document.addEventListener("DOMContentLoaded", function() {
-    const music = document.getElementById("background-music");
-    const musicToggleButton = document.getElementById("music-toggle-button");
-    const musicIcon = document.getElementById("music-icon");
-
-    let isMusicPlaying = false;
-
-    musicToggleButton.addEventListener("click", function() {
-        if (isMusicPlaying) {
-            music.play();
-            musicIcon.classList.remove("fa-volume-mute");
-            musicIcon.classList.add("fa-music");
-        } else {
-            music.pause();
-            musicIcon.classList.remove("fa-music");
-            musicIcon.classList.add("fa-volume-mute");
-        }
-        isMusicPlaying = !isMusicPlaying;
-    });
-});
-
-// Initialize the game on page load
-window.onload = startSemester;
-
-document.addEventListener("DOMContentLoaded", () => {
     const rulesModal = document.getElementById("rulesModal");
     const rulesButton = document.getElementById("rulesButton");
     const closeButton = document.querySelector(".close-button");
