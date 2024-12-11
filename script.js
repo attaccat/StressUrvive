@@ -430,7 +430,6 @@ export function checkStressLimit() {
         gameState.gameOver = true; // Prevent further interactions
         logEvent("Your stress level has exceeded the safe limit. Game over.");
         endGame();
-        return; 
     }
 }
 
@@ -501,7 +500,33 @@ document.addEventListener("DOMContentLoaded", () => {
         logContent.classList.toggle("hidden");
         toggleLogButton.textContent = logContent.classList.contains("hidden") ? "Show Full Log" : "Hide Full Log";
     });
+});
 
+document.addEventListener("DOMContentLoaded", function() {
+    const music = document.getElementById("background-music");
+    const musicToggleButton = document.getElementById("music-toggle-button");
+    const musicIcon = document.getElementById("music-icon");
+
+    let isMusicPlaying = false;
+
+    musicToggleButton.addEventListener("click", function() {
+        if (isMusicPlaying) {
+            music.play();
+            musicIcon.classList.remove("fa-volume-mute");
+            musicIcon.classList.add("fa-music");
+        } else {
+            music.pause();
+            musicIcon.classList.remove("fa-music");
+            musicIcon.classList.add("fa-volume-mute");
+        }
+        isMusicPlaying = !isMusicPlaying;
+    });
+});
+
+// Initialize the game on page load
+window.onload = startSemester;
+
+document.addEventListener("DOMContentLoaded", () => {
     const rulesModal = document.getElementById("rulesModal");
     const rulesButton = document.getElementById("rulesButton");
     const closeButton = document.querySelector(".close-button");
@@ -526,3 +551,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+
+const achievementsButton = document.createElement("button");
+achievementsButton.textContent = "View Achievements -still developing :)";
+achievementsButton.id = "achievements-button";
+achievementsButton.addEventListener("click", () => {
+    displayAchievements();
+    document.getElementById("achievements-section").classList.remove("hidden");
+});
+
+document.body.appendChild(achievementsButton);

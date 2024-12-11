@@ -386,6 +386,7 @@ export const passiveEvents = [
         consequence: function(gameState) {
             gameState.social -= 1;
             gameState.brainPower += 1;
+            gameState.isInRelationship = false;
             checkStressLimit();
             return "You felt sad, but you were able to overcome it. ";
         },
@@ -468,7 +469,7 @@ export const passiveEvents = [
             gameState.stress -= 10;
             gameState.arguedWithTeacher = true;
             checkStressLimit();
-            return "It felt great, but your gpa might not feel so great. "
+            return "You argued. It felt great, but your gpa might not feel so great. "
         }
     },
     {
